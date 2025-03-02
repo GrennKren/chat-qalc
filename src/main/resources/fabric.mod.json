@@ -1,35 +1,37 @@
 {
-  "schemaVersion": 1,
-  "id": "chatqalc",
-  "version": "${version}",
-
-  "name": "ChatQalc!",
-  "description": "A simple mod that turns your chat into a qalc (calculator) interface.",
-  "authors": [
-    "vlad2305m"
-  ],
-  "contact": {
-    "sources": "https://github.com/vlad2305m/chat-qalc"
-  },
-
-  "license": "GPLv3",
-  "icon": "assets/chatqalc/icon.png",
-
-  "environment": "client",
-  "entrypoints": {
-    "client": [
-      "com.vlad2305m.chatqalc.ChatQalc"
-    ],
-    "modmenu": [
-      "com.vlad2305m.chatqalc.ModMenuIntegration"
-    ]
-  },
-  "mixins": [
-    "chatqalc.mixins.json"
-  ],
-
-  "depends": {
-    "minecraft": "*",
-    "java": ">=17"
-  }
+	"schemaVersion": 1,
+	"id": "chatqalc",
+	"version": "${version}",
+	"name": "chatqalc",
+	"description": "A simple mod that turns your chat into a qalc (calculator) interface.",
+	"authors": [
+		"vlad2305m"
+	],
+	"contact": {
+		"sources": "https://github.com/GrennKren/chat-qalc"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/chatqalc/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"client": [
+			"com.vlad2305m.ChatqalcClient"
+		]
+	},
+	"mixins": [
+		"chatqalc.mixins.json",
+		{
+			"config": "chatqalc.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.4",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
 }
