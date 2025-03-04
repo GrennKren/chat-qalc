@@ -14,7 +14,7 @@ However, since I'm not a modder, I can't guarantee the stability of this mod.
 ## How to Use
 
 1. **Download the portable version of Qalculate** from the [official Qalculate website](https://qalculate.github.io/downloads.html).
-2. Place the downloaded files in the following directory:
+2. Extract the downloaded file in the following directory:
    ```
    ./minecraft/config/chatqalc/
    ```
