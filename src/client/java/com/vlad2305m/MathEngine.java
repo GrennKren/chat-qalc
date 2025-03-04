@@ -72,9 +72,9 @@ public class MathEngine {
 
         BufferedWriter writer = qalc.outputWriter();
         try {
-            writer.write(input+"\t");
+            writer.write(input+"\n");
             writer.flush();
-            writer.write("\010".repeat(input.length()+10)+"\n");
+            writer.write("\t\n");
             writer.flush();
         }
         catch (IOException e) {
