@@ -11,6 +11,11 @@ public class PlatformSpecificStuff {
     public static boolean isWindows() {
         return System.getProperty("os.name").matches(".*Windows.*");
     }
+
+    public static boolean isMac() {
+        return System.getProperty("os.name").matches(".*[Mm]ac.*");
+    }
+
     public static String qalcFile() {
         if (isLinux()) return qalcDir()+"qalc";
         if (isWindows()) return qalcDir()+"qalc.exe";
@@ -24,22 +29,8 @@ public class PlatformSpecificStuff {
     }
 
     public static String qalcDir() {
-        if (isLinux()) return "./config/chatqalc/qalculate-4.7.0/";
+        if (isLinux()) return "./config/chatqalc/qalculate/";
         if (isWindows()) return "./config/chatqalc/qalculate/";
         return "";
     }
-
-    public static String zipName() {
-        if (isLinux()) return "qalculate-4.7.0-x64.lin.zip";
-        if (isWindows()) return "qalculate-4.7.0-x64.win.zip";
-        throw new RuntimeException("Please install libqalculate or qalculate manually, check that command \"qalc\" (and optionally \"qalculate-gtk\") is working AND create folder \".minecraft/config/chatqalc/\" to confirm.");
-    }
-
-    public static void linuxPerms() throws IOException {
-        if (isLinux()) {
-            Runtime.getRuntime().exec("chmod +x "+qalcFile());
-            Runtime.getRuntime().exec("chmod +x "+qalculateFile());
-        }
-    }
-
 }

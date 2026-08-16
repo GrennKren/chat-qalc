@@ -1,14 +1,18 @@
 package com.vlad2305m;
 
+import com.vlad2305m.config.ChatqalcConfig;
 import org.jetbrains.annotations.Contract;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import static com.vlad2305m.ChatqalcClient.LOGGER;
-
 public class MathEngine {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger("chatqalc");
 
     private static Process qalc;
     public static Consumer<String> addMessage = (s)->{};
@@ -16,24 +20,39 @@ public class MathEngine {
     public static void initMathEngine() {
         if (qalc!=null&&qalc.isAlive()) return;
         try {
+            String qalcPath = ChatqalcConfig.get().qalcBinaryPath != null && !ChatqalcConfig.get().qalcBinaryPath.isBlank()
+                    ? ChatqalcConfig.get().qalcBinaryPath
+                    : PlatformSpecificStuff.qalcFile();
 
-            MathEngineInstaller.install();
-
-            ProcessBuilder pb = new ProcessBuilder(PlatformSpecificStuff.qalcFile());
+            ProcessBuilder pb = new ProcessBuilder(qalcPath);
 
             Map<String, String> env = pb.environment();
             env.put("QALCULATE_USER_DIR", "./config/chatqalc");
+            pb.redirectErrorStream(true);
 
             qalc = pb.start();
 
-            BufferedReader reader = qalc.inputReader();
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(qalc.getInputStream(), StandardCharsets.UTF_8));
 
             new Thread(()->readLoop(reader, qalc)).start();
 
         }
         catch (IOException e) {
             LOGGER.error(e.toString());
+            addMessage.accept("Error: Could not start qalc. Did you extract Qalculate! into ./config/chatqalc/qalculate/ ?");
         }
+    }
+
+    public static boolean isRunning() {
+        return qalc != null && qalc.isAlive();
+    }
+
+    public static boolean isBinaryPresent() {
+        String path = (ChatqalcConfig.get().qalcBinaryPath != null && !ChatqalcConfig.get().qalcBinaryPath.isBlank())
+                ? ChatqalcConfig.get().qalcBinaryPath
+                : PlatformSpecificStuff.qalcFile();
+        return new File(path).isFile();
     }
 
     private static boolean checkQalcDown(){
@@ -86,11 +105,16 @@ public class MathEngine {
     public static void evalSingle(String input) {
 
         try {
-            ProcessBuilder pb = new ProcessBuilder(PlatformSpecificStuff.qalcFile(), "-t", input);
+            String qalcPath = ChatqalcConfig.get().qalcBinaryPath != null && !ChatqalcConfig.get().qalcBinaryPath.isBlank()
+                    ? ChatqalcConfig.get().qalcBinaryPath
+                    : PlatformSpecificStuff.qalcFile();
+            ProcessBuilder pb = new ProcessBuilder(qalcPath, "-t", input);
             Map<String, String> env = pb.environment();
             env.put("QALCULATE_USER_DIR", "./config/chatqalc");
+            pb.redirectErrorStream(false);
             Process qalc2 = pb.start();
-            BufferedReader reader = qalc2.inputReader();
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(qalc2.getInputStream(), StandardCharsets.UTF_8));
             new Thread(()->readLoop(reader, qalc2)).start();
         }
         catch (IOException e) {
@@ -100,11 +124,14 @@ public class MathEngine {
 
 
     private static void readLoop(BufferedReader reader, Process process){
-        while (process.isAlive()) {
-            try { String message = reader.readLine();
-                addMessage.accept(message); }
-            catch (Throwable e) {
-                LOGGER.error(e.toString());}
+        try {
+            String message;
+            while ((message = reader.readLine()) != null) {
+                addMessage.accept(message);
+            }
+        }
+        catch (Throwable e) {
+            LOGGER.error(e.toString());
         }
     }
 
