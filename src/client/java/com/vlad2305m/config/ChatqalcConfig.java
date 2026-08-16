@@ -42,6 +42,7 @@ public class ChatqalcConfig {
 
     public boolean autoStartQalc = true;
     public boolean showIndicatorLabel = true;
+    public boolean showCompletionsInChat = true;
     public String qalcBinaryPath = "";
     public Shortcuts shortcuts = new Shortcuts();
 

@@ -129,7 +129,7 @@ public class ChatqalcClient implements ClientModInitializer {
                 if (s.length() > 1 && s.charAt(0) == '>') {
                     final String replacement = stripAnsi(s.substring(1).strip());
                     Minecraft.getInstance().execute(() -> field.setValue(replacement));
-                } else {
+                } else if (get().showCompletionsInChat) {
                     renderThreadSink.accept(s);
                 }
             }

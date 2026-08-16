@@ -54,7 +54,7 @@ public class ModMenuIntegration implements ModMenuApi {
                     .width(150).build());
             footer.addChild(Button.builder(Component.literal("Reset to defaults"), b -> {
                 ChatqalcConfig.resetToDefaults();
-                rebuildBodyAndWidgets();
+                this.init(this.width, this.height);
             }).width(150).build());
             layout.addToFooter(footer);
 
@@ -114,7 +114,7 @@ public class ModMenuIntegration implements ModMenuApi {
             }).width(150).build());
             actionRow.addChild(Button.builder(Component.literal("Restart qalc"), b -> {
                 initMathEngine();
-                rebuildBodyAndWidgets();
+                this.init(this.width, this.height);
             }).width(150).build());
             content.addChild(actionRow);
         }
@@ -137,15 +137,24 @@ public class ModMenuIntegration implements ModMenuApi {
                                 ChatqalcConfig.get().showIndicatorLabel = val;
                                 ChatqalcConfig.save();
                             }));
+            content.addChild(CycleButton.onOffBuilder(cfg.showCompletionsInChat)
+                    .create(0, 0, 300, 20,
+                            Component.literal("Show completion lines in chat"),
+                            (btn, val) -> {
+                                ChatqalcConfig.get().showCompletionsInChat = val;
+                                ChatqalcConfig.save();
+                            }));
         }
 
         private void buildShortcutsSection(LinearLayout content) {
             content.addChild(new StringWidget(Component.literal("§nKeyboard shortcuts"),
                     this.font).setMaxWidth(380));
             content.addChild(new StringWidget(Component.literal(
-                    "Click a row's button, then press the new key combination. Esc cancels.\n" +
-                    "§7Hold modifier(s) first, then press the main key."
-            ), this.font).setMaxWidth(380));
+                    "Click a row's button, then press the new key combination. Esc cancels."),
+                    this.font).setMaxWidth(380));
+            content.addChild(new StringWidget(Component.literal(
+                    "Hold modifier(s) first, then press the main key."),
+                    this.font).setMaxWidth(380));
 
             content.addChild(shortcutRow("Execute to chat (local)",
                     "executeToChat"));
@@ -169,15 +178,22 @@ public class ModMenuIntegration implements ModMenuApi {
                         captureTarget = new CaptureTarget(id, b);
                         b.setMessage(Component.literal("§ePress a key..."));
                     })
-                    .width(140).build());
+                    .width(120).build());
             row.addChild(Button.builder(Component.literal("Reset"), b -> {
                 ChatqalcConfig.Shortcut def = ChatqalcConfig.defaultShortcut(id);
                 ChatqalcConfig.Shortcut live = ChatqalcConfig.get().getShortcut(id);
                 live.key = def.key;
                 live.modifiers = def.modifiers;
                 ChatqalcConfig.save();
-                rebuildBodyAndWidgets();
-            }).width(60).build());
+                this.init(this.width, this.height);
+            }).width(55).build());
+            row.addChild(Button.builder(Component.literal("Clear"), b -> {
+                ChatqalcConfig.Shortcut live = ChatqalcConfig.get().getShortcut(id);
+                live.key = 0;
+                live.modifiers = 0;
+                ChatqalcConfig.save();
+                this.init(this.width, this.height);
+            }).width(55).build());
             return row;
         }
 
